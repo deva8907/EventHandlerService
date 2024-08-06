@@ -17,8 +17,10 @@ namespace EventHandler
                 {
                     options.ServerUrl = "localhost:29092";
                     options.Topics = ["Orders", "Payments", "Shipping"];
+                    options.MaxRetry = 3;
                 });
                 ConfigureEventProcessors(services);
+                services.AddSingleton<KafkaProducerClient>();
                 services.AddHostedService<KafkaProducerService>();
                 services.AddHostedService<KafkaConsumerService>();
             });
