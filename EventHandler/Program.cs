@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace EventHandler
 {
@@ -37,11 +38,18 @@ namespace EventHandler
             {
                 var factory = new EventProcessorFactory();
                 factory.Register("Orders", "OrderCreated", serviceProvider.GetRequiredService<OrderCreatedEventProcessor>());
-                factory.Register("Shipping", "OrderShipped", serviceProvider.GetRequiredService<OrderShippedEventProcessor>());
+                factory.Register("Shipping", "OrderShipped", AddRetryHandler(serviceProvider.GetRequiredService<OrderShippedEventProcessor>(), serviceProvider));
                 factory.Register("Payments", "PaymentCompleted", serviceProvider.GetRequiredService<PaymentCompletedEventProcessor>());
 
                 return factory;
             });
+            static IEventProcessor AddRetryHandler(IEventProcessor eventProcessor, IServiceProvider serviceProvider)
+            {
+                var config = serviceProvider.GetRequiredService<IOptions<KafkaConfiguration>>();
+                var logger = serviceProvider.GetRequiredService<ILogger<DeadLetterQueueComposite>>();
+                var kafkaProducer = serviceProvider.GetRequiredService<KafkaProducerClient>();
+                return new DeadLetterQueueComposite(eventProcessor, config, logger, kafkaProducer);
+            }
         }
     }
 }
