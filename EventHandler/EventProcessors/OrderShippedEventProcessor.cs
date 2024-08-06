@@ -1,10 +1,14 @@
-﻿namespace EventHandler.EventProcessors
+﻿using Microsoft.Extensions.Logging;
+
+namespace EventHandler.EventProcessors
 {
-    public class OrderShippedEventProcessor : IEventProcessor
+    public class OrderShippedEventProcessor(ILogger<OrderShippedEventProcessor> logger) : IEventProcessor
     {
+        private readonly ILogger _logger = logger;
+
         public void Process(OrderEvent orderEvent)
         {
-            Console.WriteLine($"Processing {orderEvent.EventType}");
+            _logger.LogInformation($"Processing {orderEvent.EventType}");
         }
     }
 }
