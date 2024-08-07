@@ -30,6 +30,10 @@ namespace EventHandler
             {
                 OrderId = "some-order-id",
                 EventType = "PaymentCompleted",
+                EventData = new EventPayload()
+                {
+                    PaymentMethod = "Cash"
+                },
                 Timestamp = DateTimeOffset.Now
             };
             await ProduceAsync(topicName, JsonSerializer.Serialize(@event));

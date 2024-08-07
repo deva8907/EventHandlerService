@@ -11,7 +11,7 @@ namespace EventHandler.EventProcessors
         public bool CanProcess(ConsumeResult<Ignore, string> message)
         {
             OrderEvent orderEvent = JsonSerializer.Deserialize<OrderEvent>(message.Message.Value);
-            return message.Topic.Equals("Orders") && orderEvent.EventType.Equals("OrderShipped");
+            return message.Topic.Equals("Shipping") && orderEvent.EventType.Equals("OrderShipped");
         }
 
         public void Process(ConsumeResult<Ignore, string> message)
