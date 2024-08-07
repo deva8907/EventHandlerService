@@ -1,7 +1,6 @@
 ﻿using Confluent.Kafka;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
 
 namespace EventHandler
 {
@@ -39,14 +38,10 @@ namespace EventHandler
             if (result == null)
                 return;
 
-            OrderEvent orderEvent = DeserializeEvent(result.Message.Value);
-            var processor = _factory.GetEventProcessor(result.Topic, orderEvent.EventType);
-            processor.Process(orderEvent);
-        }
-
-        private static OrderEvent DeserializeEvent(string value)
-        {
-            return JsonSerializer.Deserialize<OrderEvent>(value);
+            foreach (var processor in _factory.GetEventProcessors())
+            {
+                processor.Process(result);
+            }
         }
     }
 }

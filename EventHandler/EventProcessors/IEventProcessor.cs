@@ -1,7 +1,10 @@
-﻿namespace EventHandler.EventProcessors
+﻿using Confluent.Kafka;
+
+namespace EventHandler.EventProcessors
 {
     public interface IEventProcessor
     {
-        void Process(OrderEvent orderEvent);
+        bool CanProcess(ConsumeResult<Ignore, string> message);
+        void Process(ConsumeResult<Ignore, string> message);
     }
 }

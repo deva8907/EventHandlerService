@@ -4,20 +4,18 @@ using System.Text.Json;
 
 namespace EventHandler.EventProcessors
 {
-    public class OrderCreatedEventProcessor(ILogger<OrderCreatedEventProcessor> logger) : IEventProcessor
+    public class PaymentWithCashCompletedEventProcessor(ILogger<PaymentWithCashCompletedEventProcessor> logger) : BaseEventProcessor
     {
         private readonly ILogger _logger = logger;
 
-        public bool CanProcess(ConsumeResult<Ignore, string> message)
+        public override bool CanProcess(ConsumeResult<Ignore, string> message)
         {
             OrderEvent orderEvent = JsonSerializer.Deserialize<OrderEvent>(message.Message.Value);
-            return message.Topic.Equals("Orders") && orderEvent.EventType.Equals("OrderCreated");
+            return message.Topic.Equals("Payments") && orderEvent.EventType.Equals("PaymentCompleted") && orderEvent.EventData.PaymentMethod.Equals("Cash");
         }
 
-        public void Process(ConsumeResult<Ignore, string> message)
+        protected override void ProcessMessage(ConsumeResult<Ignore, string> message)
         {
-            if (!CanProcess(message)) return;
-
             OrderEvent orderEvent = JsonSerializer.Deserialize<OrderEvent>(message.Message.Value);
             _logger.LogInformation($"Processing {orderEvent.EventType}");
         }

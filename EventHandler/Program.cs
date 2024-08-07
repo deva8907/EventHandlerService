@@ -30,13 +30,13 @@ namespace EventHandler
         {
             services.AddSingleton<OrderCreatedEventProcessor>();
             services.AddSingleton<OrderShippedEventProcessor>();
-            services.AddSingleton<PaymentCompletedEventProcessor>();
+            services.AddSingleton<PaymentWithCashCompletedEventProcessor>();
             services.AddSingleton(serviceProvider =>
             {
                 var factory = new EventProcessorFactory();
-                factory.Register("Orders", "OrderCreated", serviceProvider.GetRequiredService<OrderCreatedEventProcessor>());
-                factory.Register("Shipping", "OrderShipped", serviceProvider.GetRequiredService<OrderShippedEventProcessor>());
-                factory.Register("Payments", "PaymentCompleted", serviceProvider.GetRequiredService<PaymentCompletedEventProcessor>());
+                factory.Register(serviceProvider.GetRequiredService<OrderCreatedEventProcessor>());
+                factory.Register(serviceProvider.GetRequiredService<OrderShippedEventProcessor>());
+                factory.Register(serviceProvider.GetRequiredService<PaymentWithCashCompletedEventProcessor>());
 
                 return factory;
             });

@@ -4,27 +4,16 @@ namespace EventHandler
 {
     public class EventProcessorFactory
     {
-        private Dictionary<string, IEventProcessor> _processors = [];
+        private HashSet<IEventProcessor> _processors = [];
 
-        public void Register(string topic, string eventType, IEventProcessor processor)
+        public void Register(IEventProcessor processor)
         {
-            string key = ProcessorKey(topic, eventType);
-            if (!_processors.ContainsKey(key))
-            {
-                _processors.Add(key, processor);
-            }
+            _processors.Add(processor);
         }
 
-        public IEventProcessor GetEventProcessor(string topic, string eventType)
+        public IEnumerable<IEventProcessor> GetEventProcessors()
         {
-            string key = ProcessorKey(topic, eventType);
-            if (_processors.TryGetValue(key, out IEventProcessor? value))
-            {
-                return value;
-            }
-            throw new InvalidOperationException($"No event processor found for the messageType {eventType} and topic {topic}");
+            return _processors;
         }
-
-        private static string ProcessorKey(string topic, string eventType) => topic + "-" + eventType;
     }
 }
